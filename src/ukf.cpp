@@ -60,12 +60,84 @@ UKF::~UKF() {}
  * either radar or laser.
  */
 void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
-  /**
-  TODO:
+  /*****************************************************************************
+   *  Initialization
+   ****************************************************************************/
+  if (!is_initialized_) {
+    Initialize(meas_package);
+    return;
+  }
 
-  Complete this function! Make sure you switch between lidar and radar
-  measurements.
-  */
+  /*****************************************************************************
+   *  Prediction
+   ****************************************************************************/
+
+  //compute the time elapsed between the current and previous measurements
+  const double delta_t = (meas_package.timestamp_ - time_us_) / 1000000.;
+  time_us_ = meas_package.timestamp_;
+
+  //Call the Kalman Filter predict() function
+  Prediction(delta_t);
+
+  /*****************************************************************************
+   *  Update
+   ****************************************************************************/
+
+  switch (meas_package.sensor_type_) {
+    case MeasurementPackage::LASER:
+      if (use_laser_) {
+        UpdateLidar(meas_package);
+      }
+      break;
+    case MeasurementPackage::RADAR:
+      if (use_radar_) {
+        UpdateRadar(meas_package);
+      }
+      break;
+  }
+
+  // print the output
+  cout << "x_ = " << x_ << endl;
+  cout << "P_ = " << P_ << endl;
+}
+
+/**
+ * Initializes the
+ * @param {MeasurementPackage} meas_package
+ */
+void UKF::Initialize(MeasurementPackage meas_package) {
+  // first measurement
+  cout << "EKF: " << endl;
+
+  double px = 0.;
+  double py = 0.;
+  double v = 0.;
+  double v_phi = 0.;
+
+  if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
+    // Convert radar from polar to cartesian coordinates and initialize state.
+    double rho = meas_package.raw_measurements_(0);
+    double phi = meas_package.raw_measurements_(1);
+
+    px = rho * cos(phi);
+    py = rho * sin(phi);
+
+    v = meas_package.raw_measurements_(2);
+    v_phi = phi; // Assumes the car drives exactly away from us
+
+  } else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
+    px = meas_package.raw_measurements_(0);
+    py = meas_package.raw_measurements_(1);
+  }
+
+  time_us_ = meas_package.timestamp_;
+
+  // Initialize state.
+  x_ << px, py, v, v_phi, 0.;
+  cout << "Intitial x_ = " << x_ << endl;
+
+  // done initializing, no need to predict or update
+  is_initialized_ = true;
 }
 
 /**

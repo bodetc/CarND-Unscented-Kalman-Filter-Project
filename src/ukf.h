@@ -53,19 +53,19 @@ public:
   double std_radphi_;
 
   ///* Radar measurement noise standard deviation radius change in m/s
-  double std_radrd_ ;
+  double std_radrd_;
 
   ///* Weights of sigma points
   VectorXd weights_;
 
   ///* State dimension
-  int n_x_;
+  const int n_x_ = 5;
 
   ///* Augmented state dimension
   int n_aug_;
 
   ///* Sigma point spreading parameter
-  double lambda_;
+  const double lambda_ = 3. - n_x_;
 
 
   /**
@@ -102,6 +102,13 @@ public:
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
+
+private:
+  /**
+   * Initialize
+   * @param meas_package The latest measurement data of either radar or laser
+   */
+  void Initialize(MeasurementPackage meas_package);
 };
 
 #endif /* UKF_H */
