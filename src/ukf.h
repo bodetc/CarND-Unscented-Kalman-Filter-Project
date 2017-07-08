@@ -14,13 +14,13 @@ class UKF {
 public:
 
   ///* initially set to false, set to true in first call of ProcessMeasurement
-  bool is_initialized_;
+  bool is_initialized_ = false;
 
   ///* if this is false, laser measurements will be ignored (except for init)
-  bool use_laser_;
+  const bool use_laser_ = true;
 
   ///* if this is false, radar measurements will be ignored (except for init)
-  bool use_radar_;
+  const bool use_radar_ = false;
 
   ///* state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
   VectorXd x_;
@@ -35,10 +35,10 @@ public:
   long long time_us_;
 
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
-  double std_a_;
+  const double std_a_ = 0.2;
 
   ///* Process noise standard deviation yaw acceleration in rad/s^2
-  double std_yawdd_;
+  const double std_yawdd_ = 0.2;
 
   ///* Laser measurement noise standard deviation position1 in m
   double std_laspx_;
@@ -62,10 +62,10 @@ public:
   const int n_x_ = 5;
 
   ///* Augmented state dimension
-  int n_aug_;
+  const int n_aug_ = n_x_ + 2;
 
   ///* Sigma point spreading parameter
-  const double lambda_ = 3. - n_x_;
+  const double lambda_ = 3. - n_aug_;
 
 
   /**
@@ -109,6 +109,14 @@ private:
    * @param meas_package The latest measurement data of either radar or laser
    */
   void Initialize(MeasurementPackage meas_package);
+
+  MatrixXd CreateAugmentedSigmaPoints();
+
+  MatrixXd GenerateSigmaPoints(VectorXd x, MatrixXd P, int n);
+
+  void PredictSigmaPoint(MatrixXd Xsig_aug, double delta_t);
+
+  void PredictMeanAndCovariance();
 };
 
 #endif /* UKF_H */
