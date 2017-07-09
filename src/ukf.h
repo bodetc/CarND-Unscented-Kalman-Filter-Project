@@ -2,6 +2,7 @@
 #define UKF_H
 
 #include "measurement_package.h"
+#include "measurement_update.h"
 #include "Eigen/Dense"
 #include <vector>
 #include <string>
@@ -17,10 +18,10 @@ public:
   bool is_initialized_ = false;
 
   ///* if this is false, laser measurements will be ignored (except for init)
-  const bool use_laser_ = true;
+  const bool use_laser_ = false;
 
   ///* if this is false, radar measurements will be ignored (except for init)
-  const bool use_radar_ = false;
+  const bool use_radar_ = true;
 
   ///* state vector: [pos1 pos2 vel_abs yaw_angle yaw_rate] in SI units and rad
   VectorXd x_;
@@ -47,13 +48,13 @@ public:
   double std_laspy_;
 
   ///* Radar measurement noise standard deviation radius in m
-  double std_radr_;
+  const double std_radr_ = 0.3;
 
   ///* Radar measurement noise standard deviation angle in rad
-  double std_radphi_;
+  const double std_radphi_ = 0.0175;
 
   ///* Radar measurement noise standard deviation radius change in m/s
-  double std_radrd_;
+  const double std_radrd_ = 0.1;
 
   ///* Weights of sigma points
   VectorXd weights_;
@@ -67,6 +68,8 @@ public:
   ///* Sigma point spreading parameter
   const double lambda_ = 3. - n_aug_;
 
+  ///* set measurement dimension, radar can measure r, phi, and r_dot
+  const int n_z_radar_ = 3;
 
   /**
    * Constructor
@@ -87,9 +90,9 @@ public:
   /**
    * Prediction Predicts sigma points, the state, and the state covariance
    * matrix
-   * @param delta_t Time between k and k+1 in s
+   * @param meas_package The latest measurement data of either radar or laser
    */
-  void Prediction(double delta_t);
+  void Prediction(MeasurementPackage meas_package);
 
   /**
    * Updates the state and the state covariance matrix using a laser measurement
@@ -117,6 +120,10 @@ private:
   void PredictSigmaPoint(MatrixXd Xsig_aug, double delta_t);
 
   void PredictMeanAndCovariance();
+
+  MeasurementUpdate PredictRadarMeasurement();
+
+  void UpdateState(const MeasurementUpdate& measurementUpdate, const VectorXd z);
 };
 
 #endif /* UKF_H */
