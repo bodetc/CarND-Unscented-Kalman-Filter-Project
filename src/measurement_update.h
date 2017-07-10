@@ -13,9 +13,9 @@ using Eigen::VectorXd;
 class MeasurementUpdate {
 public:
   const int n_z_;
-  const MatrixXd &Zsig_;
-  const VectorXd& z_pred_;
-  const MatrixXd& S_;
+  const MatrixXd Zsig_;
+  const VectorXd z_pred_;
+  const MatrixXd S_;
 
   /**
    * Constructor

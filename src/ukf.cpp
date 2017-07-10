@@ -16,24 +16,10 @@ UKF::UKF() {
   x_ = VectorXd(n_x_);
 
   // initial covariance matrix
-  P_ = MatrixXd(n_x_, n_x_);
+  P_ = MatrixXd::Identity(n_x_, n_x_);
 
   // Initial Sigma points
   Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1);
-
-  // Laser measurement noise standard deviation position1 in m
-  std_laspx_ = 0.15;
-
-  // Laser measurement noise standard deviation position2 in m
-  std_laspy_ = 0.15;
-
-  /**
-  TODO:
-
-  Complete the initialization. See ukf.h for other member properties.
-
-  Hint: one or more values initialized above might be wildly off...
-  */
 
   // set weights for the calculation of the mean and covariance in the prediction step
   weights_ = VectorXd(2*n_aug_+1);
@@ -155,7 +141,7 @@ MatrixXd UKF::CreateAugmentedSigmaPoints() {
   return GenerateSigmaPoints(x_aug, P_aug, n_aug_);
 }
 
-MatrixXd UKF::GenerateSigmaPoints(VectorXd x, MatrixXd P, int n) {
+MatrixXd UKF::GenerateSigmaPoints(const VectorXd& x, const MatrixXd& P, int n) {
   MatrixXd Xsig = MatrixXd(n, 2 * n + 1);
   Xsig.col(0)=x;
 
@@ -172,7 +158,7 @@ MatrixXd UKF::GenerateSigmaPoints(VectorXd x, MatrixXd P, int n) {
   return Xsig;
 }
 
-void UKF::PredictSigmaPoint(MatrixXd Xsig_aug, double delta_t) {
+void UKF::PredictSigmaPoint(const MatrixXd& Xsig_aug, double delta_t) {
   for (int i = 0; i< 2*n_aug_+1; i++)
   {
     //extract values for better readability
@@ -305,7 +291,7 @@ MeasurementUpdate UKF::PredictRadarMeasurement() {
 void UKF::UpdateState(const MeasurementUpdate& measurementUpdate, const VectorXd z) {
   // Extract values from the measurement update
   const int n_z = measurementUpdate.n_z_;
-  const MatrixXd &Zsig = measurementUpdate.Zsig_;
+  const MatrixXd& Zsig = measurementUpdate.Zsig_;
   const VectorXd& z_pred = measurementUpdate.z_pred_;
   const MatrixXd& S = measurementUpdate.S_;
 

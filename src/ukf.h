@@ -42,19 +42,19 @@ public:
   const double std_yawdd_ = 0.2;
 
   ///* Laser measurement noise standard deviation position1 in m
-  double std_laspx_;
+  const double std_laspx_ = 0.15;
 
   ///* Laser measurement noise standard deviation position2 in m
-  double std_laspy_;
+  const double std_laspy_ = 0.15;
 
   ///* Radar measurement noise standard deviation radius in m
   const double std_radr_ = 0.3;
 
   ///* Radar measurement noise standard deviation angle in rad
-  const double std_radphi_ = 0.0175;
+  const double std_radphi_ = 0.03;
 
   ///* Radar measurement noise standard deviation radius change in m/s
-  const double std_radrd_ = 0.1;
+  const double std_radrd_ = 0.3;
 
   ///* Weights of sigma points
   VectorXd weights_;
@@ -115,9 +115,9 @@ private:
 
   MatrixXd CreateAugmentedSigmaPoints();
 
-  MatrixXd GenerateSigmaPoints(VectorXd x, MatrixXd P, int n);
+  MatrixXd GenerateSigmaPoints(const VectorXd& x, const MatrixXd& P, int n);
 
-  void PredictSigmaPoint(MatrixXd Xsig_aug, double delta_t);
+  void PredictSigmaPoint(const MatrixXd& Xsig_aug, double delta_t);
 
   void PredictMeanAndCovariance();
 
