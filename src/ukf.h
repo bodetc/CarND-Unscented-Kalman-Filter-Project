@@ -18,7 +18,7 @@ public:
   bool is_initialized_ = false;
 
   ///* if this is false, laser measurements will be ignored (except for init)
-  const bool use_laser_ = false;
+  const bool use_laser_ = true;
 
   ///* if this is false, radar measurements will be ignored (except for init)
   const bool use_radar_ = true;
@@ -71,6 +71,9 @@ public:
   ///* set measurement dimension, radar can measure r, phi, and r_dot
   const int n_z_radar_ = 3;
 
+  ///* set measurement dimension, lidar measures p_x and p_y
+  const int n_z_lidar_ = 2;
+
   /**
    * Constructor
    */
@@ -122,6 +125,8 @@ private:
   void PredictMeanAndCovariance();
 
   MeasurementUpdate PredictRadarMeasurement();
+
+  MeasurementUpdate PredictLidarMeasurement();
 
   void UpdateState(const MeasurementUpdate& measurementUpdate, const VectorXd z);
 };
