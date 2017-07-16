@@ -285,17 +285,8 @@ MatrixXd UKF::TransformSigmaPointsToLidarSpace() {
   //create matrix for sigma points in measurement space
   MatrixXd Zsig = MatrixXd(n_z_lidar_, 2 * n_aug_ + 1);
 
-  //transform sigma points into measurement space
-  for (int i = 0; i < 2 * n_aug_ + 1; i++) {  //2n+1 simga points
-
-    // extract values for better readibility
-    double p_x = Xsig_pred_(0,i);
-    double p_y = Xsig_pred_(1,i);
-
-    // measurement model
-    Zsig(0,i) = p_x;
-    Zsig(1,i) = p_y;
-  }
+  //simply take the first two rows (p_x and p_y)
+  Zsig = Xsig_pred_.topRows(2);
 
   return Zsig;
 }
