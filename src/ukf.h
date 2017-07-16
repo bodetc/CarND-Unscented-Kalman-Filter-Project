@@ -124,11 +124,10 @@ private:
 
   void PredictMeanAndCovariance();
 
-  MeasurementUpdate PredictRadarMeasurement();
+  MatrixXd TransformSigmaPointsToRadarSpace();
+  MatrixXd TransformSigmaPointsToLidarSpace();
 
-  MeasurementUpdate PredictLidarMeasurement();
-
-  void UpdateState(const MeasurementUpdate& measurementUpdate, const VectorXd z);
+  void UpdateState(const MatrixXd& Zsig, const VectorXd& z);
 };
 
 #endif /* UKF_H */
