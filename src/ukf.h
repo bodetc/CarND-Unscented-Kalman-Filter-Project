@@ -116,17 +116,41 @@ private:
    */
   void Initialize(MeasurementPackage meas_package);
 
+  /**
+   * Creates augmented Sigma points for the predicion steps
+   */
   MatrixXd CreateAugmentedSigmaPoints();
 
+  /**
+   * Generates a Sigma point matrix
+   * @param x state vector
+   * @param P state covariance matrix
+   * @param n number of dimensions of the state vector and covariance matrix
+   * @return the generated Sigma points
+   */
   MatrixXd GenerateSigmaPoints(const VectorXd& x, const MatrixXd& P, int n);
 
+  /**
+   * Predicts the position of the augmented sigma point after a timestep delta_t
+   */
   void PredictSigmaPoint(const MatrixXd& Xsig_aug, double delta_t);
 
+  /**
+   * Predicts the new mean vector and covariance matrix from the augmented Sigma points
+   */
   void PredictMeanAndCovariance();
 
+  /**
+   * Transforms the Sigma points to radar/lidar space
+   */
   MatrixXd TransformSigmaPointsToRadarSpace();
   MatrixXd TransformSigmaPointsToLidarSpace();
 
+  /**
+   * Update the state after a measurement and calculate the NIS
+   * @param Zsig the Sigma points in measurement space
+   * @param z the actual measurement
+   */
   void UpdateState(const MatrixXd& Zsig, const VectorXd& z);
 };
 

@@ -119,6 +119,9 @@ void UKF::Prediction(MeasurementPackage meas_package) {
   PredictMeanAndCovariance();
 }
 
+/**
+ * Creates augmented Sigma points for the predicion steps
+ */
 MatrixXd UKF::CreateAugmentedSigmaPoints() {
   //create augmented mean state
   VectorXd x_aug = VectorXd(n_aug_);
@@ -136,6 +139,9 @@ MatrixXd UKF::CreateAugmentedSigmaPoints() {
   return GenerateSigmaPoints(x_aug, P_aug, n_aug_);
 }
 
+/**
+ * Predicts the position of the augmented sigma point after a timestep delta_t
+ */
 MatrixXd UKF::GenerateSigmaPoints(const VectorXd& x, const MatrixXd& P, int n) {
   MatrixXd Xsig = MatrixXd(n, 2 * n + 1);
   Xsig.col(0)=x;
@@ -153,6 +159,13 @@ MatrixXd UKF::GenerateSigmaPoints(const VectorXd& x, const MatrixXd& P, int n) {
   return Xsig;
 }
 
+/**
+ * Generates a Sigma point matrix
+ * @param x state vector
+ * @param P state covariance matrix
+ * @param n number of dimensions of the state vector and covariance matrix
+ * @return the generated Sigma points
+ */
 void UKF::PredictSigmaPoint(const MatrixXd& Xsig_aug, double delta_t) {
   for (int i = 0; i< 2*n_aug_+1; i++)
   {
@@ -198,6 +211,9 @@ void UKF::PredictSigmaPoint(const MatrixXd& Xsig_aug, double delta_t) {
   }
 }
 
+/**
+ * Predicts the new mean vector and covariance matrix from the augmented Sigma points
+ */
 void UKF::PredictMeanAndCovariance() {
   //predicted state mean
   x_.fill(0.0);
@@ -235,14 +251,6 @@ void UKF::UpdateRadar(MeasurementPackage meas_package) {
  * @param {MeasurementPackage} meas_package
  */
 void UKF::UpdateLidar(MeasurementPackage meas_package) {
-  /**
-  TODO:
-
-  Complete this function! Use lidar data to update the belief about the object's
-  position. Modify the state vector, x_, and covariance, P_.
-
-  You'll also need to calculate the lidar NIS.
-  */
   MatrixXd Zsig = TransformSigmaPointsToLidarSpace();
 
   //extract measurement
@@ -251,6 +259,9 @@ void UKF::UpdateLidar(MeasurementPackage meas_package) {
   UpdateState(Zsig, z);
 }
 
+/**
+ * Transforms the Sigma points to radar space
+ */
 MatrixXd UKF::TransformSigmaPointsToRadarSpace() {
   //create matrix for sigma points in measurement space
   MatrixXd Zsig = MatrixXd(n_z_radar_, 2 * n_aug_ + 1);
@@ -276,6 +287,9 @@ MatrixXd UKF::TransformSigmaPointsToRadarSpace() {
   return Zsig;
 }
 
+/**
+ * Transforms the Sigma points to lidar space
+ */
 MatrixXd UKF::TransformSigmaPointsToLidarSpace() {
   //create matrix for sigma points in measurement space
   MatrixXd Zsig = MatrixXd(n_z_lidar_, 2 * n_aug_ + 1);
@@ -286,6 +300,11 @@ MatrixXd UKF::TransformSigmaPointsToLidarSpace() {
   return Zsig;
 }
 
+/**
+ * Update the state after a measurement and calculate the NIS
+ * @param Zsig the Sigma points in measurement space
+ * @param z the actual measurement
+ */
 void UKF::UpdateState(const MatrixXd& Zsig, const VectorXd& z) {
 
   // Extract sigma space dimensions
