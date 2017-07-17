@@ -36,7 +36,7 @@ public:
   long long time_us_;
 
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
-  const double std_a_ = 0.2;
+  const double std_a_ = 0.3;
 
   ///* Process noise standard deviation yaw acceleration in rad/s^2
   const double std_yawdd_ = 0.2;

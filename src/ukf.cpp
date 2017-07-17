@@ -16,7 +16,12 @@ UKF::UKF() {
   x_ = VectorXd(n_x_);
 
   // initial covariance matrix
-  P_ = MatrixXd::Identity(n_x_, n_x_);
+  P_ = MatrixXd(5, 5);
+  P_ << 1, 0, 0, 0, 0,
+        0, 1, 0, 0, 0,
+        0, 0, 10, 0, 0,
+        0, 0, 0, 10, 0,
+        0, 0, 0, 0, 10;
 
   // Initial Sigma points
   Xsig_pred_ = MatrixXd(n_x_, 2 * n_aug_ + 1);
@@ -75,8 +80,6 @@ void UKF::Initialize(MeasurementPackage meas_package) {
 
   double px = 0.;
   double py = 0.;
-  double v = 0.;
-  double v_phi = 0.;
 
   if (meas_package.sensor_type_ == MeasurementPackage::RADAR) {
     // Convert radar from polar to cartesian coordinates and initialize state.
@@ -85,10 +88,6 @@ void UKF::Initialize(MeasurementPackage meas_package) {
 
     px = rho * cos(phi);
     py = rho * sin(phi);
-
-    v = meas_package.raw_measurements_(2);
-    v_phi = phi; // Assumes the car drives exactly away from us
-
   } else if (meas_package.sensor_type_ == MeasurementPackage::LASER) {
     px = meas_package.raw_measurements_(0);
     py = meas_package.raw_measurements_(1);
@@ -97,7 +96,7 @@ void UKF::Initialize(MeasurementPackage meas_package) {
   time_us_ = meas_package.timestamp_;
 
   // Initialize state.
-  x_ << px, py, v, v_phi, 0.;
+  x_ << px, py, 0, 0, 0.;
   cout << "Intitial x_ = " << x_ << endl;
 
   // done initializing, no need to predict or update
