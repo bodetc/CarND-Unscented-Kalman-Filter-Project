@@ -63,10 +63,6 @@ void UKF::ProcessMeasurement(MeasurementPackage meas_package) {
       }
       break;
   }
-
-  // print the output
-  cout << "x_ = " << x_ << endl;
-  cout << "P_ = " << P_ << endl;
 }
 
 /**
@@ -368,4 +364,9 @@ void UKF::UpdateState(const MatrixXd& Zsig, const VectorXd& z) {
   //update state mean and covariance matrix
   x_ = x_ + K * z_diff;
   P_ = P_ - K*S*K.transpose();
+
+  // calculate NIS
+  double nis = z_diff.transpose() * S.inverse() * z_diff;
+
+  std::cout << time_us_ << ", " << nis << std::endl;
 }
